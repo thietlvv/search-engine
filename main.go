@@ -4,20 +4,16 @@ import (
 	"context"
 	"log"
 	"net/http"
-
-	"github.com/thietlvv/search-engine/db/main_db"
 	"github.com/thietlvv/search-engine/features/batdongsan.com.vn"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/thietlvv/search-engine/db/main_db"
 	//"io"
 )
 
 // Initiate web server
 func main() {
-
-	batdongsan_com_vn.Start()
-
 	main_db := main_db.InitDataLayer()
 	defer main_db.Disconnect(context.Background())
 	//defer main_db.Disconnect()
@@ -34,5 +30,11 @@ func main() {
 	e.GET("/", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, echo.Map{"code": 2000, "result": "success"})
 	})
+
+	e.GET("/bds", func(c echo.Context) error {
+		products := 	batdongsan_com_vn.Start()
+		return c.JSON(http.StatusOK, echo.Map{"code": 2000, "result": "success", "data": products})
+	})
+
 	log.Fatal(e.Start(":9090"))
 }
