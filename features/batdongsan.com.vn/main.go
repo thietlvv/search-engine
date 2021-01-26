@@ -15,15 +15,9 @@ type Product struct {
 	ProductContent string
 }
 
-func Start() []Product {
-	//fName := "batdongsan_com_vn.json"
-	//file, err := os.Create(fName)
-	//if err != nil {
-	//	log.Fatalf("Cannot create file %q: %s\n", fName, err)
-	//	return
-	//}
-	//defer file.Close()
+func processSinglePage(url string) []Product {
 
+	fmt.Print(url)
 	// Instantiate default collector
 	c := colly.NewCollector()
 
@@ -49,14 +43,21 @@ func Start() []Product {
 		fmt.Println("Visiting", r.URL)
 	})
 
-	c.Visit("https://batdongsan.com.vn/nha-dat-ban")
+	c.Visit(url)
+	return products
+}
 
-	//enc := json.NewEncoder(file)
-	//enc.SetIndent("", "  ")
-	//
-	//// Dump json to the standard output
-	//enc.Encode(products)
+func Start() []Product {
 
-	//log.Printf("Scraping finished, check file %q for results\n", fName)
+	products := make([]Product, 0)
+
+	url := "https://batdongsan.com.vn/nha-dat-ban"
+	products = processSinglePage(url)
+
+	for i := 0; i < 10; i++ {
+		fmt.Println("i",i)
+		productsSub := processSinglePage(url + "/p" + string(i+1))
+		products = append(products, productsSub ...)
+	}
 	return products
 }
