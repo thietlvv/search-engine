@@ -17,7 +17,7 @@ type Product struct {
 
 func processSinglePage(url string) []Product {
 
-	fmt.Print(url)
+	fmt.Println("url", url)
 	// Instantiate default collector
 	c := colly.NewCollector()
 
@@ -55,8 +55,7 @@ func Start() []Product {
 	products = processSinglePage(url)
 
 	for i := 0; i < 10; i++ {
-		fmt.Println("i",i)
-		productsSub := processSinglePage(url + "/p" + string(i+1))
+		productsSub := processSinglePage(fmt.Sprintf("%s%s%d", url, "/p", i+1))
 		products = append(products, productsSub ...)
 	}
 	return products
