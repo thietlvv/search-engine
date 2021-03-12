@@ -24,6 +24,7 @@ func processSinglePage(url string) []Product {
 	products := make([]Product, 0)
 
 	c.OnHTML("div .product-item", func(e *colly.HTMLElement) {
+		fmt.Println("e", e)
 		link, _    := e.DOM.Find("a").Attr("href")
 		image, _    := e.DOM.Find("img").Attr("src")
 
@@ -53,10 +54,11 @@ func Start() []Product {
 
 	url := "https://batdongsan.com.vn/nha-dat-ban"
 	products = processSinglePage(url)
+	fmt.Println("products", products)
 
-	for i := 0; i < 10; i++ {
-		productsSub := processSinglePage(fmt.Sprintf("%s%s%d", url, "/p", i+1))
-		products = append(products, productsSub ...)
-	}
+	// for i := 0; i < 10; i++ {
+	// 	productsSub := processSinglePage(fmt.Sprintf("%s%s%d", url, "/p", i+1))
+	// 	products = append(products, productsSub ...)
+	// }
 	return products
 }

@@ -4,19 +4,19 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"github.com/thietlvv/search-engine/features/batdongsan.com.vn"
+	http2 "search-engine/features/coinmarketcap/delivery/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/thietlvv/search-engine/db/main_db"
+	"search-engine/db/main_db"
 	//"io"
 )
 
 // Initiate web server
 func main() {
-	main_db := main_db.InitDataLayer()
-	defer main_db.Disconnect(context.Background())
-	//defer main_db.Disconnect()
+	client := main_db.InitDataLayer()
+	defer client.Disconnect(context.Background())
+	db := client.Database("annashopdb")
 
 	e := echo.New()
 	e.Use(middleware.Logger())
@@ -27,13 +27,14 @@ func main() {
 		AllowMethods: []string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodDelete, http.MethodPut},
 		MaxAge:       86400,
 	}))
+
 	e.GET("/", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, echo.Map{"code": 2000, "result": "success"})
 	})
 
 	e.GET("/bds", func(c echo.Context) error {
-		products := 	batdongsan_com_vn.Start()
-		return c.JSON(http.StatusOK, echo.Map{"code": 2000, "result": "success", "data": products})
+		result := http2.Start(db)
+		return c.JSON(http.StatusOK, echo.Map{"code": 2000, "result": "success", "data": result})
 	})
 
 	log.Fatal(e.Start(":9090"))
