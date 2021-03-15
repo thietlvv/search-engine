@@ -25,8 +25,8 @@ func processSinglePage(url string) []Product {
 
 	c.OnHTML("div .product-item", func(e *colly.HTMLElement) {
 		fmt.Println("e", e)
-		link, _    := e.DOM.Find("a").Attr("href")
-		image, _    := e.DOM.Find("img").Attr("src")
+		link, _ := e.DOM.Find("a").Attr("href")
+		image, _ := e.DOM.Find("img").Attr("src")
 
 		product := Product{
 			Title:          e.ChildText(".product-title"),

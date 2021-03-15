@@ -4,11 +4,14 @@ import (
 	"context"
 	"log"
 	"net/http"
-	http2 "search-engine/features/coinmarketcap/delivery/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"search-engine/db/main_db"
+
+	httpHandler "search-engine/features/coinmarketcap/delivery/http"
+	clientRepo "search-engine/features/coinmarketcap/repository/mongodb"
+	crawlerUsecase "search-engine/features/coinmarketcap/usecase"
 	//"io"
 )
 
@@ -16,7 +19,7 @@ import (
 func main() {
 	client := main_db.InitDataLayer()
 	defer client.Disconnect(context.Background())
-	db := client.Database("annashopdb")
+	//db := client.Database("annashopdb")
 
 	e := echo.New()
 	e.Use(middleware.Logger())
@@ -28,14 +31,7 @@ func main() {
 		MaxAge:       86400,
 	}))
 
-	e.GET("/", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, echo.Map{"code": 2000, "result": "success"})
-	})
-
-	e.GET("/bds", func(c echo.Context) error {
-		result := http2.Start(db)
-		return c.JSON(http.StatusOK, echo.Map{"code": 2000, "result": "success", "data": result})
-	})
+	httpHandler.NewHttpHandler(e, crawlerUsecase.NewUsecase(clientRepo.NewRepository(client)))
 
 	log.Fatal(e.Start(":9090"))
 }
